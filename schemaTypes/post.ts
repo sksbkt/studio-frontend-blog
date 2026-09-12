@@ -4,6 +4,7 @@ export const post = defineType({
   name: 'post',
   title: 'Post',
   type: 'document',
+
   fields: [
     defineField({
       name: 'title',
@@ -25,6 +26,7 @@ export const post = defineType({
       ],
       validation: (Rule) => Rule.required(),
     }),
+
     defineField({
       name: 'slug',
       title: 'Slug',
@@ -33,8 +35,20 @@ export const post = defineType({
         source: 'title.en',
         maxLength: 96,
       },
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) =>
+        Rule.required().custom((value) => {
+          if (!value?.current) {
+            return 'Slug is required'
+          }
+
+          if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value.current)) {
+            return 'Use lowercase letters, numbers, and hyphens only'
+          }
+
+          return true
+        }),
     }),
+
     defineField({
       name: 'excerpt',
       title: 'Excerpt',
@@ -57,11 +71,14 @@ export const post = defineType({
       ],
       validation: (Rule) => Rule.required(),
     }),
+
     defineField({
       name: 'coverImage',
       title: 'Cover image',
       type: 'image',
-      options: {hotspot: true},
+      options: {
+        hotspot: true,
+      },
       fields: [
         defineField({
           name: 'alt',
@@ -70,18 +87,21 @@ export const post = defineType({
         }),
       ],
     }),
+
     defineField({
       name: 'publishedAt',
       title: 'Published at',
       type: 'datetime',
       validation: (Rule) => Rule.required(),
     }),
+
     defineField({
       name: 'readingTime',
       title: 'Reading time (minutes)',
       type: 'number',
       validation: (Rule) => Rule.required().min(1),
     }),
+
     defineField({
       name: 'tags',
       title: 'Tags',
@@ -91,12 +111,14 @@ export const post = defineType({
         layout: 'tags',
       },
     }),
+
     defineField({
       name: 'featured',
       title: 'Featured',
       type: 'boolean',
       initialValue: false,
     }),
+
     defineField({
       name: 'body',
       title: 'Body',
@@ -129,6 +151,7 @@ export const post = defineType({
                 annotations: [],
               },
             }),
+
             defineArrayMember({
               type: 'code',
               options: {
@@ -146,6 +169,7 @@ export const post = defineType({
           ],
           validation: (Rule) => Rule.required(),
         }),
+
         defineField({
           name: 'fa',
           title: 'Persian body',
@@ -173,6 +197,7 @@ export const post = defineType({
                 annotations: [],
               },
             }),
+
             defineArrayMember({
               type: 'code',
               options: {
@@ -194,6 +219,7 @@ export const post = defineType({
       validation: (Rule) => Rule.required(),
     }),
   ],
+
   preview: {
     select: {
       title: 'title.en',

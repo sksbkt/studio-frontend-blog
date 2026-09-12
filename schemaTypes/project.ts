@@ -4,6 +4,7 @@ export const project = defineType({
   name: 'project',
   title: 'Project',
   type: 'document',
+
   fields: [
     defineField({
       name: 'title',
@@ -25,6 +26,7 @@ export const project = defineType({
       ],
       validation: (Rule) => Rule.required(),
     }),
+
     defineField({
       name: 'slug',
       title: 'Slug',
@@ -33,8 +35,20 @@ export const project = defineType({
         source: 'title.en',
         maxLength: 96,
       },
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) =>
+        Rule.required().custom((value) => {
+          if (!value?.current) {
+            return 'Slug is required'
+          }
+
+          if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value.current)) {
+            return 'Use lowercase letters, numbers, and hyphens only'
+          }
+
+          return true
+        }),
     }),
+
     defineField({
       name: 'description',
       title: 'Description',
@@ -57,11 +71,14 @@ export const project = defineType({
       ],
       validation: (Rule) => Rule.required(),
     }),
+
     defineField({
       name: 'image',
       title: 'Image',
       type: 'image',
-      options: {hotspot: true},
+      options: {
+        hotspot: true,
+      },
       fields: [
         defineField({
           name: 'alt',
@@ -71,32 +88,43 @@ export const project = defineType({
       ],
       validation: (Rule) => Rule.required(),
     }),
+
     defineField({
       name: 'technologies',
       title: 'Technologies',
       type: 'array',
-      of: [{type: 'string'}],
+      of: [
+        defineField({
+          type: 'string',
+          name: 'technology',
+          title: 'Technology',
+        }),
+      ],
       options: {
         layout: 'tags',
       },
-      validation: (Rule) => Rule.required().min(1),
+      validation: (Rule) => Rule.min(1).error('Add at least one technology'),
     }),
+
     defineField({
       name: 'github',
       title: 'GitHub URL',
       type: 'url',
     }),
+
     defineField({
       name: 'demo',
       title: 'Demo URL',
       type: 'url',
     }),
+
     defineField({
       name: 'featured',
       title: 'Featured',
       type: 'boolean',
       initialValue: false,
     }),
+
     defineField({
       name: 'content',
       title: 'Content',
@@ -124,6 +152,7 @@ export const project = defineType({
           ],
           validation: (Rule) => Rule.required(),
         }),
+
         defineField({
           name: 'challenges',
           title: 'Challenges',
@@ -146,6 +175,7 @@ export const project = defineType({
           ],
           validation: (Rule) => Rule.required(),
         }),
+
         defineField({
           name: 'outcome',
           title: 'Outcome',
@@ -172,6 +202,7 @@ export const project = defineType({
       validation: (Rule) => Rule.required(),
     }),
   ],
+
   preview: {
     select: {
       title: 'title.en',
